@@ -101,22 +101,24 @@ class Grille:
 if __name__ == '__main__':
 
     m = Grille(12,7)
-    print(m)
+    ia = True
+
     fg = True
     while fg:
         fg = not m.IsTerminal()
         if fg : m.play(depth = 2)
         print(m)
-        print("A vous de jouer")
+
         fg = not m.IsTerminal()
         if fg :
-            c = int(input()) - 1
-            for i in range(m.pos.shape[0] - 1, -1, -1):
-                if m.pos[i][c] == 0: 
-                    m.pos[i][c] = -1
-                    break
+            if ia:
+                m.play(player = -1, depth = 2)
+            else:
+                m.apply(input("A vous de jouer"))
+            print(m)
 
     print("Fin de partie")
+    print("-----------------------")
     print(m)
     if m.IsWin(1) : print("Vous avez perdu")
     elif m.IsWin(-1) : print("Vous avez gagné")
