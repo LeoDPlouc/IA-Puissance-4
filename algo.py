@@ -47,8 +47,8 @@ class Grille:
     def Actions(self, ia):
         res = list()
         for i in range(self.pos.shape[0]):
-            for j in range(self.pos.shape[1] - 1,0,-1):
-                if self.pos[i][j] == 0 and not self.IsTerminal():
+            for j in range(self.pos.shape[1] - 1,-1,-1):
+                if self.pos[j][i] == 0 and not self.IsTerminal():
                     e = Grille(grid = self.pos)
                     e.pos[j][i] = ia
                     res.append(e)
@@ -59,12 +59,15 @@ class Grille:
     def IsWin(self, ia):
         w = list()
         x,y = self.pos.shape[0], self.pos.shape[1]
-        for i in range(x - 4):
-            for j in range(y - 4):
-                w.append(self.pos[0 + i][0 + j] == self.pos[1 + i][1 + j] == self.pos[2 + i][2 + j] == self.pos[3 + i][3 + j] == ia)
-                w.append(self.pos[x - i - 1][y - j - 1] == self.pos[x - 2 - i][y - 2 - j] == self.pos[x - 3 - i][y - 3 - j] == self.pos[x - 4 - i][y - 4 - j] == ia)
-                w.append(self.pos[0 + i][j] == self.pos[1 + i][j] == self.pos[2 + i][j] == self.pos[3 + i][j] == ia)
-                w.append(self.pos[i][0 + j] == self.pos[i][1 + j] == self.pos[i][2 + j] == self.pos[i][3 + j] == ia)
+        for i in range(x):
+            for j in range(y):
+                if i < x - 4:
+                    if j < y - 4 :
+                        w.append(self.pos[0 + i][0 + j] == self.pos[1 + i][1 + j] == self.pos[2 + i][2 + j] == self.pos[3 + i][3 + j] == ia)
+                        w.append(self.pos[x - i - 1][y - j - 1] == self.pos[x - 2 - i][y - 2 - j] == self.pos[x - 3 - i][y - 3 - j] == self.pos[x - 4 - i][y - 4 - j] == ia)
+                    w.append(self.pos[0 + i][j] == self.pos[1 + i][j] == self.pos[2 + i][j] == self.pos[3 + i][j] == ia)
+                if j < y - 4:
+                        w.append(self.pos[i][0 + j] == self.pos[i][1 + j] == self.pos[i][2 + j] == self.pos[i][3 + j] == ia)
         return True in w
 
     def IsTerminal(self):
@@ -94,7 +97,7 @@ if __name__ == '__main__':
         fg = not m.IsTerminal()
         if fg :
             c = int(input()) - 1
-            for i in range(m.pos.shape[1] - 1, 0, -1):
+            for i in range(m.pos.shape[1] - 1, -1, -1):
                 if m.pos[i][c] == 0: 
                     m.pos[i][c] = -1
                     break
