@@ -58,15 +58,15 @@ class Grille:
 
     def IsWin(self, ia):
         w = list()
-        x,y = self.pos.shape[0], self.pos.shape[1]
-        for i in range(x):
-            for j in range(y):
-                if i < x - 4:
-                    if j < y - 4 :
+        x,y = self.pos.shape[1], self.pos.shape[0]
+        for i in range(y):
+            for j in range(x):
+                if i <= x - 4:
+                    if j <= y - 4 :
                         w.append(self.pos[0 + i][0 + j] == self.pos[1 + i][1 + j] == self.pos[2 + i][2 + j] == self.pos[3 + i][3 + j] == ia)
-                        w.append(self.pos[x - i - 1][y - j - 1] == self.pos[x - 2 - i][y - 2 - j] == self.pos[x - 3 - i][y - 3 - j] == self.pos[x - 4 - i][y - 4 - j] == ia)
+                        w.append(self.pos[x - i - 1][0 + j] == self.pos[x - 2 - i][1 + j] == self.pos[x - 3 - i][2 + j] == self.pos[x - 4 - i][3 + j] == ia)
                     w.append(self.pos[0 + i][j] == self.pos[1 + i][j] == self.pos[2 + i][j] == self.pos[3 + i][j] == ia)
-                if j < y - 4:
+                if j <= y - 4:
                         w.append(self.pos[i][0 + j] == self.pos[i][1 + j] == self.pos[i][2 + j] == self.pos[i][3 + j] == ia)
         return True in w
 
@@ -87,6 +87,7 @@ class Grille:
 
 
 if __name__ == '__main__':
+
     m = Grille(5,5)
     fg = True
     while fg:
@@ -104,6 +105,6 @@ if __name__ == '__main__':
 
     print("Fin de partie")
     print(m)
-    if m.IsWin(True) : print("Vous avez perdu")
-    elif m.IsWin(False) : print("Vous avez gagné")
+    if m.IsWin(1) : print("Vous avez perdu")
+    elif m.IsWin(-1) : print("Vous avez gagné")
     else : print("Match nul")
