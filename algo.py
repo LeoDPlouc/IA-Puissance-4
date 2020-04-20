@@ -68,7 +68,7 @@ class Grille:
         return True in w
 
     def IsTerminal(self):
-        return self.IsWin(True) or self.IsWin(False) or not (True in [None in self.pos[i] for i in range(3)])
+        return self.IsWin(True) or self.IsWin(False) or not (True in [None in self.pos[i] for i in range(self.pos.ndim(0))])
 
     def Value(self):
         if self.IsWin(True): return 10
