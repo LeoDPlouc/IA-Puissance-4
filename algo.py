@@ -17,21 +17,21 @@ def minmax(ia, grille, depth):
         return val
 
 def initab(grille):
-    return alphabeta(-1, grille)
+    return alphabeta(-1, grille, 5)
 
-def alphabeta(ia, grille, alpha = -100, beta = 100):
-    if grille.IsTerminal(): return grille.Value()
-    elif ia:
+def alphabeta(ia, grille, depth, alpha = -100, beta = 100):
+    if grille.IsTerminal() or depth == 0: return grille.Value()
+    elif ia == 1:
         val = -100
         for g in grille.Actions(1):
-            val = max(val, alphabeta(-1, g, alpha, beta))
+            val = max(val, alphabeta(-1, g, depth - 1, alpha, beta))
             if beta <= val : return val
             alpha = max(alpha, val)
         return val
     else:
         val = 100
         for g in grille.Actions(-1):
-            val = min(val, alphabeta(1, g, alpha, beta))
+            val = min(val, alphabeta(1, g, depth - 1, alpha, beta))
             if alpha >= val : return val
             beta = min(beta, val)
         return val
@@ -46,10 +46,10 @@ class Grille:
 
     def Actions(self, ia):
         res = list()
-        for i in range(self.pos.shape[1]):
-            for j in range(self.pos.shape[1],-1,-1):
-                if self.pos[j][i] == 0 and not self.IsTerminal():
-                    e = Grille(self.pos)
+        for i in range(self.pos.shape[0]):
+            for j in range(self.pos.shape[1] - 1,0,-1):
+                if self.pos[i][j] == 0 and not self.IsTerminal():
+                    e = Grille(grid = self.pos)
                     e.pos[j][i] = ia
                     res.append(e)
                     break
@@ -77,14 +77,14 @@ class Grille:
 
     def playIa(self, alphabeta = True):
         if alphabeta : self.pos = max(self.Actions(1), key=initab).pos
-        else : self.pos = max(self.Actions(-1), key=initmm).pos
+        else : self.pos = max(self.Actions(1), key=initmm).pos
 
     def __str__(self):
         return str(self.pos)
 
 
 if __name__ == '__main__':
-    m = Grille(12,12)
+    m = Grille(5,5)
     fg = True
     while fg:
         fg = not m.IsTerminal()
@@ -94,8 +94,10 @@ if __name__ == '__main__':
         fg = not m.IsTerminal()
         if fg :
             c = int(input()) - 1
-            for j in range(self.pos.ndim(0),-1,-1):
-                if self.pos[j][c] == 0: m.pos[j][c] = False
+            for i in range(m.pos.shape[1] - 1, 0, -1):
+                if m.pos[i][c] == 0: 
+                    m.pos[i][c] = -1
+                    break
 
     print("Fin de partie")
     print(m)
