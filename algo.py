@@ -46,8 +46,8 @@ class Grille:
 
     def Actions(self, ia):
         res = list()
-        for i in range(self.pos.ndim(1)):
-            for j in range(self.pos.ndim(0),-1,-1):
+        for i in range(self.pos.shape[1]):
+            for j in range(self.pos.shape[1],-1,-1):
                 if self.pos[j][i] == 0 and not self.IsTerminal():
                     e = Grille(self.pos)
                     e.pos[j][i] = ia
@@ -58,9 +58,9 @@ class Grille:
 
     def IsWin(self, ia):
         w = list()
-        x,y = self.pos.ndim(0), self.pos.ndim(1)
-        for i in range(self.pos.ndim(0) - 4):
-            for j in range(self.pos.ndim(1) - 4):
+        x,y = self.pos.shape[0], self.pos.shape[1]
+        for i in range(x - 4):
+            for j in range(y - 4):
                 w.append(self.pos[0 + i][0 + j] == self.pos[1 + i][1 + j] == self.pos[2 + i][2 + j] == self.pos[3 + i][3 + j] == ia)
                 w.append(self.pos[x - i][y - j] == self.pos[x - 1 - i][y- 1 - j] == self.pos[x - 2 - i][y - 2 - j] == self.pos[x - 3 - i][y - 3 - j] == ia)
                 w.append(self.pos[0 + i][j] == self.pos[1 + i][j] == self.pos[2 + i][j] == self.pos[3 + i][j] == ia)
@@ -68,7 +68,7 @@ class Grille:
         return True in w
 
     def IsTerminal(self):
-        return self.IsWin(True) or self.IsWin(False) or not (True in [None in self.pos[i] for i in range(self.pos.ndim(0))])
+        return self.IsWin(True) or self.IsWin(False) or not (True in [0 in self.pos[i] for i in range(self.pos.shape[0])])
 
     def Value(self):
         if self.IsWin(True): return 10
@@ -84,7 +84,7 @@ class Grille:
 
 
 if __name__ == '__main__':
-    m = Grille()
+    m = Grille(12,12)
     fg = True
     while fg:
         fg = not m.IsTerminal()
