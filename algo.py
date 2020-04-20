@@ -55,15 +55,15 @@ class Grille:
 
     def IsWin(self, player):
         w = list()
-        x,y = self.pos.shape[1], self.pos.shape[0]
-        for i in range(y):
-            for j in range(x):
-                if i < y - 4:
-                    if j < x - 4 :
+        x,y = self.pos.shape[0], self.pos.shape[1]
+        for i in range(x):
+            for j in range(y):
+                if i < x - 3:
+                    if j < y - 3 :
                         w.append(self.pos[0 + i][0 + j] == self.pos[1 + i][1 + j] == self.pos[2 + i][2 + j] == self.pos[3 + i][3 + j] == player)
                         w.append(self.pos[x - i - 1][0 + j] == self.pos[x - 2 - i][1 + j] == self.pos[x - 3 - i][2 + j] == self.pos[x - 4 - i][3 + j] == player)
                     w.append(self.pos[0 + i][j] == self.pos[1 + i][j] == self.pos[2 + i][j] == self.pos[3 + i][j] == player)
-                if j < x - 4:
+                if j < y - 3:
                         w.append(self.pos[i][0 + j] == self.pos[i][1 + j] == self.pos[i][2 + j] == self.pos[i][3 + j] == player)
         return True in w
 
@@ -109,16 +109,16 @@ class Grille:
 
 if __name__ == '__main__':
 
-    m = Grille(12,7)
-    ia1 = False
-    ia2 = False
+    m = Grille(12,5)
+    ia1 = True
+    ia2 = True
 
     fg = True
     while fg:
         fg = not m.IsTerminal()
         if fg :
             if ia1:
-                m.play(player = 1, depth = 2)
+                m.play(player = 1, depth = 3)
             else:
                 m.apply(int(input("A vous de jouer")), 1)
             clearTerm()
@@ -127,7 +127,7 @@ if __name__ == '__main__':
         fg = not m.IsTerminal()
         if fg :
             if ia2:
-                m.play(player = -1, depth = 2)
+                m.play(player = -1, depth = 3)
             else:
                 m.apply(int(input("A vous de jouer")), -1)
             clearTerm()
