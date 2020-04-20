@@ -80,7 +80,7 @@ class Grille:
         else : self.pos = max(self.Actions(True), key=initmm).pos
 
     def __str__(self):
-        return str(self.pos[0]) + "\n" + str(self.pos[1]) + "\n" + str(self.pos[2])
+        return str(self.pos)
 
 
 if __name__ == '__main__':
@@ -94,7 +94,8 @@ if __name__ == '__main__':
         fg = not m.IsTerminal()
         if fg :
             c = int(input()) - 1
-            m.pos[(c-(c%3))//3][c%3] = False
+            for j in range(self.pos.ndim(0),-1,-1):
+                if self.pos[j][c] == 0: m.pos[j][c] = False
 
     print("Fin de partie")
     print(m)
