@@ -1,11 +1,8 @@
 import numpy as np
 
-def initmm(grille):
-    return minmax(-1, grille, 3)
-
-def minmax(ia, grille, depth):
+def minmax(player, grille, depth):
     if depth == 0 or grille.IsTerminal(): return grille.Value()
-    if ia:
+    if player:
         val = -100
         for g in grille.Actions(1):
             val = max(val, minmax(-1, g, depth - 1))
@@ -16,12 +13,9 @@ def minmax(ia, grille, depth):
             val = min(val, minmax(1, g, depth - 1))
         return val
 
-def initab(grille):
-    return alphabeta(-1, grille, 5)
-
-def alphabeta(ia, grille, depth, alpha = -100, beta = 100):
+def alphabeta(player, grille, depth, alpha = -100, beta = 100):
     if grille.IsTerminal() or depth == 0: return grille.Value()
-    elif ia == 1:
+    elif player == 1:
         val = -100
         for g in grille.Actions(1):
             val = max(val, alphabeta(-1, g, depth - 1, alpha, beta))
@@ -44,30 +38,31 @@ class Grille:
             self.pos = grid.copy()
 
 
-    def Actions(self, ia):
+    def Actions(self, player):
         res = list()
-        for i in range(self.pos.shape[0]):
-            for j in range(self.pos.shape[1] - 1,-1,-1):
-                if self.pos[j][i] == 0 and not self.IsTerminal():
+        
+        for i in range(self.pos.shape[0] - 1,-1,-1):
+            for j in range(self.pos.shape[1]):
+                if self.pos[i][j] == 0 and not self.IsTerminal():
                     e = Grille(grid = self.pos)
-                    e.pos[j][i] = ia
+                    e.pos[i][j] = player
                     res.append(e)
                     break
         return res
 
 
-    def IsWin(self, ia):
+    def IsWin(self, player):
         w = list()
         x,y = self.pos.shape[1], self.pos.shape[0]
         for i in range(y):
             for j in range(x):
-                if i <= x - 4:
-                    if j <= y - 4 :
-                        w.append(self.pos[0 + i][0 + j] == self.pos[1 + i][1 + j] == self.pos[2 + i][2 + j] == self.pos[3 + i][3 + j] == ia)
-                        w.append(self.pos[x - i - 1][0 + j] == self.pos[x - 2 - i][1 + j] == self.pos[x - 3 - i][2 + j] == self.pos[x - 4 - i][3 + j] == ia)
-                    w.append(self.pos[0 + i][j] == self.pos[1 + i][j] == self.pos[2 + i][j] == self.pos[3 + i][j] == ia)
-                if j <= y - 4:
-                        w.append(self.pos[i][0 + j] == self.pos[i][1 + j] == self.pos[i][2 + j] == self.pos[i][3 + j] == ia)
+                if i < y - 4:
+                    if j < x - 4 :
+                        w.append(self.pos[0 + i][0 + j] == self.pos[1 + i][1 + j] == self.pos[2 + i][2 + j] == self.pos[3 + i][3 + j] == player)
+                        w.append(self.pos[x - i - 1][0 + j] == self.pos[x - 2 - i][1 + j] == self.pos[x - 3 - i][2 + j] == self.pos[x - 4 - i][3 + j] == player)
+                    w.append(self.pos[0 + i][j] == self.pos[1 + i][j] == self.pos[2 + i][j] == self.pos[3 + i][j] == player)
+                if j < x - 4:
+                        w.append(self.pos[i][0 + j] == self.pos[i][1 + j] == self.pos[i][2 + j] == self.pos[i][3 + j] == player)
         return True in w
 
     def IsTerminal(self):
@@ -78,9 +73,19 @@ class Grille:
         elif self.IsWin(-1): return -10
         else: return 0
 
-    def playIa(self, alphabeta = True):
-        if alphabeta : self.pos = max(self.Actions(1), key=initab).pos
-        else : self.pos = max(self.Actions(1), key=initmm).pos
+    def play(self, player = 1, ab = True, depth = 5, alpha = -100, beta = 100):
+        if ab :
+            v,g = -100,None
+            for a in self.Actions(1):
+                e = alphabeta(player, a, depth, alpha, beta)
+                if e > v: v,g = e,a
+            self.pos = g.pos
+        else : 
+            v,g = -100,None
+            for a in self.Actions(1):
+                e = minmax(player, a, depth)
+                if e > v: v,g = e,a
+            self.pos = g.pos
 
     def __str__(self):
         return str(self.pos)
@@ -88,17 +93,18 @@ class Grille:
 
 if __name__ == '__main__':
 
-    m = Grille(12,12)
+    m = Grille(12,7)
+    print(m)
     fg = True
     while fg:
         fg = not m.IsTerminal()
-        if fg : m.playIa()
+        if fg : m.play(depth = 2)
         print(m)
         print("A vous de jouer")
         fg = not m.IsTerminal()
         if fg :
             c = int(input()) - 1
-            for i in range(m.pos.shape[1] - 1, -1, -1):
+            for i in range(m.pos.shape[0] - 1, -1, -1):
                 if m.pos[i][c] == 0: 
                     m.pos[i][c] = -1
                     break
