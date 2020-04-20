@@ -1,3 +1,5 @@
+import numpy as np
+
 def initmm(grille):
     return minmax(False, grille, 5)
 
@@ -35,31 +37,34 @@ def alphabeta(ia, grille, alpha = -100, beta = 100):
         return val
 
 class Grille:
-    def __init__(self, grid = None):
+    def __init__(self, i = None, j = None, grid = None):
         if grid is None:
-            self.pos = [[None, None, None],[None, None, None],[None, None, None]]
+            self.pos = np.zeros((i,j),np.byte)
         else:
-            self.pos = [grid[i].copy() for i in range(3)]
+            self.pos = grid.copy()
 
 
     def Actions(self, ia):
         res = list()
-        for i in range(3):
-            for j in range(3):
-                if self.pos[i][j] is None and not self.IsTerminal():
+        for i in range(self.pos.ndim(1)):
+            for j in range(self.pos.ndim(0),-1,-1):
+                if self.pos[j][i] == 0 and not self.IsTerminal():
                     e = Grille(self.pos)
-                    e.pos[i][j] = ia
+                    e.pos[j][i] = ia
                     res.append(e)
+                    break
         return res
+
 
     def IsWin(self, ia):
         w = list()
-        for i in range(3):
-                w.append(self.pos[0][i] == self.pos[1][i] == self.pos[2][i] == ia)
-                w.append(self.pos[i][0] == self.pos[i][1] == self.pos[i][2] == ia)
-        w.append(self.pos[0][0] == self.pos[1][1] == self.pos[2][2] == ia)
-        w.append(self.pos[0][2] == self.pos[1][1] == self.pos[2][0] == ia)
-
+        x,y = self.pos.ndim(0), self.pos.ndim(1)
+        for i in range(self.pos.ndim(0) - 4):
+            for j in range(self.pos.ndim(1) - 4):
+                w.append(self.pos[0 + i][0 + j] == self.pos[1 + i][1 + j] == self.pos[2 + i][2 + j] == self.pos[3 + i][3 + j] == ia)
+                w.append(self.pos[x - i][y - j] == self.pos[x - 1 - i][y- 1 - j] == self.pos[x - 2 - i][y - 2 - j] == self.pos[x - 3 - i][y - 3 - j] == ia)
+                w.append(self.pos[0 + i][j] == self.pos[1 + i][j] == self.pos[2 + i][j] == self.pos[3 + i][j] == ia)
+                w.append(self.pos[i][0 + j] == self.pos[i][1 + j] == self.pos[i][2 + j] == self.pos[i][3 + j] == ia)
         return True in w
 
     def IsTerminal(self):
