@@ -1,7 +1,7 @@
 import numpy as np
 
 def initmm(grille):
-    return minmax(-1, grille, 5)
+    return minmax(-1, grille, 3)
 
 def minmax(ia, grille, depth):
     if depth == 0 or grille.IsTerminal(): return grille.Value()
@@ -88,7 +88,7 @@ class Grille:
 
 if __name__ == '__main__':
 
-    m = Grille(5,5)
+    m = Grille(12,12)
     fg = True
     while fg:
         fg = not m.IsTerminal()
