@@ -87,6 +87,13 @@ class Grille:
                 if e > v: v,g = e,a
             self.pos = g.pos
 
+    def apply(self, column):
+        c = column - 1
+        for i in range(self.pos.shape[0] - 1, -1, -1):
+            if self.pos[i][c] == 0: 
+                self.pos[i][c] = -1
+                break
+
     def __str__(self):
         return str(self.pos)
 
