@@ -44,8 +44,8 @@ class Grille:
     def Actions(self, player):
         res = list()
         
-        for i in range(self.pos.shape[0] - 1,-1,-1):
-            for j in range(self.pos.shape[1]):
+        for j in range(self.pos.shape[1]):
+            for i in range(self.pos.shape[0] - 1,-1,-1):
                 if self.pos[i][j] == 0 and not self.IsTerminal():
                     e = Grille(grid = self.pos)
                     e.pos[i][j] = player
@@ -118,19 +118,19 @@ if __name__ == '__main__':
         fg = not m.IsTerminal()
         if fg :
             if ia1:
-                m.play(player = 1, depth = 3)
+                m.play(player = 1, depth = 5)
             else:
                 m.apply(int(input("A vous de jouer")), 1)
-            clearTerm()
+            #clearTerm()
             print(m)
 
         fg = not m.IsTerminal()
         if fg :
             if ia2:
-                m.play(player = -1, depth = 3)
+                m.play(player = -1, depth = 5)
             else:
                 m.apply(int(input("A vous de jouer")), -1)
-            clearTerm()
+            #clearTerm()
             print(m)
 
     clearTerm()
