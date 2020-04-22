@@ -1,6 +1,7 @@
 import numpy as np
 import os
 from math import inf
+from random import shuffle
 
 def clearTerm():
     os.system("cls")
@@ -52,6 +53,7 @@ class Grille:
                     e.pos[i][j] = player
                     res.append(e)
                     break
+        shuffle(res)
         return res
 
     def IsWin(self, player):
@@ -121,7 +123,7 @@ if __name__ == '__main__':
         fg = not m.IsTerminal()
         if fg :
             if ia1:
-                m.play(player = 1, depth = 8)
+                m.play(player = 1, depth = 5)
             else:
                 m.apply(int(input("A vous de jouer")), 1)
             #clearTerm()
@@ -130,7 +132,7 @@ if __name__ == '__main__':
         fg = not m.IsTerminal()
         if fg :
             if ia2:
-                m.play(player = -1, depth = 8)
+                m.play(player = -1, depth = 5)
             else:
                 m.apply(int(input("A vous de jouer")), -1)
             #clearTerm()
