@@ -1,5 +1,6 @@
 import numpy as np
 import os
+from math import inf
 
 def clearTerm():
     os.system("cls")
@@ -17,17 +18,17 @@ def minmax(player, grille, depth):
             val = min(val, minmax(1, g, depth - 1))
         return val
 
-def alphabeta(cplayer, eplayer, grille, depth, alpha = -100, beta = 100):
-    if grille.IsTerminal() or depth == 0: return grille.Value(cplayer)
+def alphabeta(cplayer, eplayer, grille, depth, alpha = -inf, beta = inf):
+    if grille.IsTerminal() or depth == 0: return grille.Value(cplayer,depth)
     elif cplayer == eplayer:
-        val = -100
+        val = -inf
         for g in grille.Actions(eplayer):
             val = max(val, alphabeta(cplayer, -eplayer, g, depth - 1, alpha, beta))
             if beta <= val : return val
             alpha = max(alpha, val)
         return val
     else:
-        val = 100
+        val = inf
         for g in grille.Actions(eplayer):
             val = min(val, alphabeta(cplayer, -eplayer, g, depth - 1, alpha, beta))
             if alpha >= val : return val
@@ -70,20 +71,20 @@ class Grille:
     def IsTerminal(self):
         return self.IsWin(1) or self.IsWin(-1) or not (True in [0 in self.pos[i] for i in range(self.pos.shape[0])])
 
-    def Value(self, player):
-        if self.IsWin(player): return 10
-        elif self.IsWin(-player): return -10
+    def Value(self, player, depth):
+        if self.IsWin(player): return 100 + depth
+        elif self.IsWin(-player): return -100 - depth
         else: return 0
 
-    def play(self, player = 1, ab = True, depth = 5, alpha = -100, beta = 100):
+    def play(self, player = 1, ab = True, depth = 5, alpha = -inf, beta = inf):
         if ab :
-            v,g = -100,None
+            v,g = -inf,None
             for a in self.Actions(player):
-                e = alphabeta(player, player, a, depth, alpha, beta)
+                e = alphabeta(player, -player, a, depth, alpha, beta)
                 if e > v: v,g = e,a
             self.pos = g.pos
         else : 
-            v,g = -100,None
+            v,g = -1000,None
             for a in self.Actions(1):
                 e = minmax(player, player, a, depth)
                 if e > v: v,g = e,a
@@ -100,16 +101,18 @@ class Grille:
         res = ""
         for i in range(self.pos.shape[0]):
             for j in range(self.pos.shape[1]):
-                if self.pos[i][j] == 0: res += " "
-                if self.pos[i][j] == 1: res += "O"
-                if self.pos[i][j] == -1: res += "X"
+                if self.pos[i][j] == 0: res += "| |"
+                if self.pos[i][j] == 1: res += "|O|"
+                if self.pos[i][j] == -1: res += "|X|"
             res += "\n"
         return res
 
 
 if __name__ == '__main__':
 
-    m = Grille(12,5)
+    m = Grille(6,6)
+
+
     ia1 = True
     ia2 = True
 
@@ -118,7 +121,7 @@ if __name__ == '__main__':
         fg = not m.IsTerminal()
         if fg :
             if ia1:
-                m.play(player = 1, depth = 5)
+                m.play(player = 1, depth = 8)
             else:
                 m.apply(int(input("A vous de jouer")), 1)
             #clearTerm()
@@ -127,7 +130,7 @@ if __name__ == '__main__':
         fg = not m.IsTerminal()
         if fg :
             if ia2:
-                m.play(player = -1, depth = 5)
+                m.play(player = -1, depth = 8)
             else:
                 m.apply(int(input("A vous de jouer")), -1)
             #clearTerm()
