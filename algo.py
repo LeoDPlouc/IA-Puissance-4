@@ -18,7 +18,7 @@ def minmax(player, grille, depth):
         return val
 
 def alphabeta(cplayer, eplayer, grille, depth, alpha = -100, beta = 100):
-    if grille.IsTerminal() or depth == 0: return grille.Value()
+    if grille.IsTerminal() or depth == 0: return grille.Value(cplayer)
     elif cplayer == eplayer:
         val = -100
         for g in grille.Actions(eplayer):
@@ -70,9 +70,9 @@ class Grille:
     def IsTerminal(self):
         return self.IsWin(1) or self.IsWin(-1) or not (True in [0 in self.pos[i] for i in range(self.pos.shape[0])])
 
-    def Value(self):
-        if self.IsWin(1): return 10
-        elif self.IsWin(-1): return -10
+    def Value(self, player):
+        if self.IsWin(player): return 10
+        elif self.IsWin(-player): return -10
         else: return 0
 
     def play(self, player = 1, ab = True, depth = 5, alpha = -100, beta = 100):
