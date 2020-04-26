@@ -64,7 +64,7 @@ class Grille:
         return False
 
     def IsTerminal(self):
-        return not (True in [0 in self.pos[i] for i in range(self.pos.shape[0])])
+        return not 0 in self.pos
 
     def Value(self, player, depth):
         if self.IsWin(player): return 100 + depth
