@@ -112,7 +112,7 @@ class Grille:
 
 if __name__ == '__main__':
 
-    m = Grille(6,6)
+    m = Grille(6,12)
 
 
     ia1 = True
