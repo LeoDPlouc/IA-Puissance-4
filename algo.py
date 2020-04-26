@@ -3,22 +3,6 @@ import os
 from math import inf
 from random import shuffle
 
-def clearTerm():
-    os.system("cls")
-
-def minmax(player, grille, depth):
-    if depth == 0 or grille.IsTerminal(): return grille.Value()
-    if player:
-        val = -100
-        for g in grille.Actions(1):
-            val = max(val, minmax(-1, g, depth - 1))
-        return val
-    else:
-        val = 100
-        for g in grille.Actions(-1):
-            val = min(val, minmax(1, g, depth - 1))
-        return val
-
 def alphabeta(cplayer, eplayer, grille, depth, alpha = -inf, beta = inf):
     if grille.IsTerminal() or depth == 0: return grille.Value(cplayer,depth)
     elif cplayer == eplayer:
@@ -78,19 +62,12 @@ class Grille:
         elif self.IsWin(-player): return -100 - depth
         else: return 0
 
-    def play(self, player = 1, ab = True, depth = 5, alpha = -inf, beta = inf):
-        if ab :
-            v,g = -inf,None
-            for a in self.Actions(player):
-                e = alphabeta(player, -player, a, depth, alpha, beta)
-                if e > v: v,g = e,a
-            self.pos = g.pos
-        else : 
-            v,g = -1000,None
-            for a in self.Actions(1):
-                e = minmax(player, player, a, depth)
-                if e > v: v,g = e,a
-            self.pos = g.pos
+    def play(self, player = 1, depth = 5, alpha = -inf, beta = inf):
+		v,g = -inf,None
+		for a in self.Actions(player):
+			e = alphabeta(player, -player, a, depth, alpha, beta)
+			if e > v: v,g = e,a
+		self.pos = g.pos
 
     def apply(self, column, player):
         c = column - 1
