@@ -2,9 +2,20 @@ import numpy as np
 import os
 from math import inf
 from random import shuffle
+from scipy.signal import convolve2d as convolve
+
+def diag(n, rot=False):
+    d = np.identity(n)
+    if rot: d = np.rot90(d)
+    return d
+
+def line(n, rot=False):
+    l = np.array([np.ones(n), np.zeros(n)])
+    if rot: l = np.rot90(l)
+    return l
 
 def alphabeta(cplayer, eplayer, grille, depth, alpha = -inf, beta = inf):
-    if grille.IsTerminal() or depth == 0: return grille.Value(cplayer,depth)
+    if depth == 0 or grille.IsWin(-eplayer) or grille.IsTerminal() : return grille.Value(cplayer,depth)
     elif cplayer == eplayer:
         val = -inf
         for g in grille.Actions(eplayer):
@@ -41,21 +52,19 @@ class Grille:
         return res
 
     def IsWin(self, player):
-        w = list()
-        x,y = self.pos.shape[0], self.pos.shape[1]
-        for i in range(x):
-            for j in range(y):
-                if i < x - 3:
-                    if j < y - 3 :
-                        w.append(self.pos[0 + i][0 + j] == self.pos[1 + i][1 + j] == self.pos[2 + i][2 + j] == self.pos[3 + i][3 + j] == player)
-                        w.append(self.pos[x - i - 1][0 + j] == self.pos[x - 2 - i][1 + j] == self.pos[x - 3 - i][2 + j] == self.pos[x - 4 - i][3 + j] == player)
-                    w.append(self.pos[0 + i][j] == self.pos[1 + i][j] == self.pos[2 + i][j] == self.pos[3 + i][j] == player)
-                if j < y - 3:
-                        w.append(self.pos[i][0 + j] == self.pos[i][1 + j] == self.pos[i][2 + j] == self.pos[i][3 + j] == player)
-        return True in w
+        i = convolve(self.pos,diag(4))/4
+        if player in i: return True
+        i = convolve(self.pos,diag(4,True))/4
+        if player in i: return True
+        i = convolve(self.pos,line(4))/4
+        if player in i: return True
+        i = convolve(self.pos,line(4,True))/4
+        if player in i: return True
+
+        return False
 
     def IsTerminal(self):
-        return self.IsWin(1) or self.IsWin(-1) or not (True in [0 in self.pos[i] for i in range(self.pos.shape[0])])
+        return not (True in [0 in self.pos[i] for i in range(self.pos.shape[0])])
 
     def Value(self, player, depth):
         if self.IsWin(player): return 100 + depth
@@ -63,11 +72,11 @@ class Grille:
         else: return 0
 
     def play(self, player = 1, depth = 5, alpha = -inf, beta = inf):
-		v,g = -inf,None
-		for a in self.Actions(player):
-			e = alphabeta(player, -player, a, depth, alpha, beta)
-			if e > v: v,g = e,a
-		self.pos = g.pos
+        v,g = -inf,None
+        for a in self.Actions(player):
+            e = alphabeta(player, -player, a, depth, alpha, beta)
+            if e > v: v,g = e,a
+        self.pos = g.pos
 
     def apply(self, column, player):
         c = column - 1
@@ -88,7 +97,7 @@ class Grille:
 
 
 if __name__ == '__main__':
-
+    
     m = Grille(6,12)
 
 
@@ -97,25 +106,22 @@ if __name__ == '__main__':
 
     fg = True
     while fg:
-        fg = not m.IsTerminal()
+        fg = not (m.IsWin(-1) or m.IsTerminal())
         if fg :
             if ia1:
                 m.play(player = 1, depth = 5)
             else:
                 m.apply(int(input("A vous de jouer")), 1)
-            #clearTerm()
             print(m)
 
-        fg = not m.IsTerminal()
+        fg = not (m.IsWin(1) or m.IsTerminal())
         if fg :
             if ia2:
                 m.play(player = -1, depth = 5)
             else:
                 m.apply(int(input("A vous de jouer")), -1)
-            #clearTerm()
             print(m)
 
-    clearTerm()
     print("Fin de partie")
     print("-----------------------")
     print(m)
