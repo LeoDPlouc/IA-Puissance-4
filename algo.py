@@ -104,20 +104,20 @@ if __name__ == '__main__':
     ia1 = True
     ia2 = True
 
-    fg = True
-    while fg:
-        fg = not (m.IsWin(-1) or m.IsTerminal())
-        if fg :
+    cont = True
+    while cont:
+        cont = not (m.IsWin(-1) or m.IsTerminal())
+        if cont :
             if ia1:
-                m.play(player = 1, depth = 5)
+                m.play(player = 1, depth = 1)
             else:
                 m.apply(int(input("A vous de jouer")), 1)
             print(m)
 
-        fg = not (m.IsWin(1) or m.IsTerminal())
-        if fg :
+        cont = not (m.IsWin(1) or m.IsTerminal()) and cont
+        if cont :
             if ia2:
-                m.play(player = -1, depth = 5)
+                m.play(player = -1, depth = 2)
             else:
                 m.apply(int(input("A vous de jouer")), -1)
             print(m)
@@ -125,6 +125,6 @@ if __name__ == '__main__':
     print("Fin de partie")
     print("-----------------------")
     print(m)
-    if m.IsWin(1) : print("Vous avez perdu")
-    elif m.IsWin(-1) : print("Vous avez gagné")
+    if m.IsWin(1) : print("J1 a gagné")
+    elif m.IsWin(-1) : print("J2 a gagné")
     else : print("Match nul")
