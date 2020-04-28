@@ -4,6 +4,11 @@ from math import inf
 from random import shuffle
 from scipy.signal import convolve2d as convolve
 
+b = np.array([
+    [0,1,0],
+    [0,1,0],
+    [1,1,1],])
+
 #Retourne une matrice diagonale de taille n, rotation a 90° avec rot
 def diag(n, rot=False): 
     d = np.identity(n)
@@ -85,6 +90,7 @@ class Grille:
         val += sum(sum(convolve(player * self.pos,diag(3,True))))
         val += sum(sum(convolve(player * self.pos,line(3))))
         val += sum(sum(convolve(player * self.pos,line(3,True))))
+        val += sum(sum(convolve(player * self.pos,b)))
         if self.IsWin(player): val += 1000 + depth
         elif self.IsWin(-player): val += -1000 - depth
         return val
