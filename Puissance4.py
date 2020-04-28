@@ -9,7 +9,7 @@ Created on Thu Apr  2 01:41:59 2020
 import http.client
 import time
 import numpy as np
-import algo
+from algo import Grille
 
 CRED = '\33[31m'
 CEND = '\033[0m'
@@ -20,13 +20,13 @@ servergame="chendeb.free.fr"
 
 def jouerWEB(idjeu,monid,tour,jeu,server=servergame):
     conn = http.client.HTTPConnection(server)
-    req=conn.request("GET", "/Puissance6?status=JeJoue&idjeu="+idjeu+"&idjoueur="+monid+"&tour="+str(tour)+"&jeu="+str(jeu))
+    conn.request("GET", "/Puissance6?status=JeJoue&idjeu="+idjeu+"&idjoueur="+monid+"&tour="+str(tour)+"&jeu="+str(jeu))
     r1 = conn.getresponse()
     return (r1.status, r1.reason)  
 
 def getJeuAdv(idjeu,idAdv,tour,server=servergame):
     conn = http.client.HTTPConnection(server)
-    req=conn.request("GET", "/Puissance6?status=GetJeuAdv&idjeu="+idjeu+"&idjoueur="+idAdv+"&tour="+str(tour))
+    conn.request("GET", "/Puissance6?status=GetJeuAdv&idjeu="+idjeu+"&idjoueur="+idAdv+"&tour="+str(tour))
     r1 = conn.getresponse()
     advJeu=None
     if(r1.status==200):
@@ -132,27 +132,28 @@ else:
 tour=0
 while(True):
     
+    grilleJeu = Grille(grilleDim, grilleDim)
     
     if(joueurLocalquiCommence):
-        jeu=monjeu()
+        jeu= grilleJeu.play(1,5)
         jouerWEB(idjeu,idjoueurLocal,tour,jeu)
-        remplirGrille(joueurLocal,jeu)
-        printGrille()
+        grilleJeu.apply(jeu,1)
+        print(grilleJeu)
         jeuAdv=loopToGetJeuAdv( 10,idjeu,idjoueurDistant,tour)
         #c'est ce jeu qu'on doit transmettre à notre IA
         appliqueJeuAdv(jeuAdv)
-        remplirGrille(joueurDistant,jeuAdv)
-        printGrille()
+        grilleJeu.apply(jeuAdv, -1)
+        print(grilleJeu)
     else:
         jeuAdv=loopToGetJeuAdv( 10,idjeu,idjoueurDistant,tour)
         #c'est ce jeu qu'on doit transmettre à notre IA
         appliqueJeuAdv(jeuAdv)
-        remplirGrille(joueurDistant,jeuAdv)
-        printGrille()
-        jeu=monjeu()
+        grilleJeu.apply(jeuAdv, -1)
+        print(grilleJeu)
+        jeu=grilleJeu.play(1,5)
         jouerWEB(idjeu,idjoueurLocal,tour,jeu)
-        remplirGrille(joueurLocal,jeu)
-        printGrille()
+        grilleJeu.apply(jeu,1)
+        print(grilleJeu)
         
     tour+=1        
     
