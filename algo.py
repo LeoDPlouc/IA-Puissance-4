@@ -39,11 +39,12 @@ def alphabeta(cplayer, eplayer, grille, depth, alpha = -inf, beta = inf):
 
 class Grille:
     #Initialise une grille de puissance 4 de dimension i,j ou avec une grille grid prédéfinie
-    def __init__(self, i = None, j = None, grid = None):
+    def __init__(self, i = None, j = None, grid = None, a = -1):
         if grid is None:
             self.pos = np.zeros((i,j),np.byte)
         else:
             self.pos = grid.copy()
+        self.a = a
 
     #Retourne la liste des coups possible a partir de cette grille pour le joueur player
     def Actions(self, player):
@@ -52,7 +53,7 @@ class Grille:
         for j in range(self.pos.shape[1]):
             for i in range(self.pos.shape[0] - 1,-1,-1):
                 if self.pos[i][j] == 0 and not self.IsTerminal():
-                    e = Grille(grid = self.pos)
+                    e = Grille(grid = self.pos, a = j + 1)
                     e.pos[i][j] = player
                     res.append(e)
                     break
@@ -88,7 +89,7 @@ class Grille:
         for a in self.Actions(player):
             e = alphabeta(player, -player, a, depth, alpha, beta)
             if e > v: v,g = e,a
-        self.pos = g.pos
+        return g.a
 
     #Joue un coup column pour le joueur player
     def apply(self, column, player):
@@ -123,7 +124,7 @@ if __name__ == '__main__':
         cont = not (m.IsWin(-1) or m.IsTerminal())
         if cont :
             if ia1:
-                m.play(player = 1, depth = 4)
+                m.apply(m.play(player = 1, depth = 4), 1)
             else:
                 m.apply(int(input("A vous de jouer")), 1)
             print(m)
@@ -131,7 +132,7 @@ if __name__ == '__main__':
         cont = not (m.IsWin(1) or m.IsTerminal()) and cont
         if cont :
             if ia2:
-                m.play(player = -1, depth = 4)
+                m.apply(m.play(player = -1, depth = 4), -1)
             else:
                 m.apply(int(input("A vous de jouer")), -1)
             print(m)
