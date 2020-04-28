@@ -133,6 +133,7 @@ if __name__ == '__main__':
         if cont :
             if ia2:
                 m.apply(m.play(player = -1, depth = 4), -1)
+                
             else:
                 m.apply(int(input("A vous de jouer")), -1)
             print(m)
