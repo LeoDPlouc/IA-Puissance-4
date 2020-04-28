@@ -100,12 +100,12 @@ grille=np.zeros((grilleDim,grilleDim),dtype=np.byte)
 
 
 #idjeu est un id unique, si vous abondonnez une partie, pensez à créer un nouveau idjeu
-idjeu="ID280420201"
+idjeu="ID280420207"
 idjoueurLocal="leo"
 idjoueurDistant="tristan"
 
 # bien préviser si vous commencer le jeu ou c'est l'adversaire qui commence
-joueurLocalquiCommence=False
+joueurLocalquiCommence=True
 
 
 
@@ -130,12 +130,12 @@ else:
     
     
 tour=0
+grilleJeu = Grille(grilleDim, grilleDim)
+
 while(True):
     
-    grilleJeu = Grille(grilleDim, grilleDim)
-    
     if(joueurLocalquiCommence):
-        jeu= grilleJeu.play(1,5)
+        jeu= grilleJeu.play(1,3)
         jouerWEB(idjeu,idjoueurLocal,tour,jeu)
         grilleJeu.apply(jeu,1)
         print(grilleJeu)
@@ -150,7 +150,7 @@ while(True):
         appliqueJeuAdv(jeuAdv)
         grilleJeu.apply(jeuAdv, -1)
         print(grilleJeu)
-        jeu=grilleJeu.play(1,5)
+        jeu=grilleJeu.play(1,3)
         jouerWEB(idjeu,idjoueurLocal,tour,jeu)
         grilleJeu.apply(jeu,1)
         print(grilleJeu)

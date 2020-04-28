@@ -79,9 +79,15 @@ class Grille:
 
     #Retourne la valeur de la grille pour le joueur player
     def Value(self, player, depth):
-        if self.IsWin(player): return 100 + depth
-        elif self.IsWin(-player): return -100 - depth
-        else: return 0
+        val = 0
+        val += -abs(self.pos.shape[1] - self.a/2)
+        val += sum(sum(convolve(player * self.pos,diag(3))))
+        val += sum(sum(convolve(player * self.pos,diag(3,True))))
+        val += sum(sum(convolve(player * self.pos,line(3))))
+        val += sum(sum(convolve(player * self.pos,line(3,True))))
+        if self.IsWin(player): val += 1000 + depth
+        elif self.IsWin(-player): val += -1000 - depth
+        return val
 
     #Fait jouer l'IA en tant que joueur player
     def play(self, player = 1, depth = 5, alpha = -inf, beta = inf):
