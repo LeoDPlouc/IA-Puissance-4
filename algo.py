@@ -3,11 +3,7 @@ import os
 from math import inf
 from random import shuffle
 from scipy.signal import convolve2d as convolve
-
-b = np.array([
-    [0,1,0],
-    [0,1,0],
-    [1,1,1],])
+import time
 
 #Retourne une matrice diagonale de taille n, rotation a 90° avec rot
 def diag(n, rot=False): 
@@ -22,14 +18,14 @@ def line(n, rot=False):
     return l
 
 #Algorithme minmax avec élagage alphabeta
-def alphabeta(cplayer, eplayer, grille, depth, alpha = -inf, beta = inf):
+def alphabeta(cplayer, eplayer, grille, depth, t, alpha = -inf, beta = inf):
     #Si la grille est un etat finale on renvoie sa valeur
-    if depth == 0 or grille.IsWin(-eplayer) or grille.IsTerminal() : return grille.Value(cplayer,depth)
+    if time.time() - t >= 9 or depth == 0 or grille.IsWin(-eplayer) or grille.IsTerminal() : return grille.Value(cplayer,depth)
     #Si c'est au joueur de jouer on cherche son coup de plus grande valeur
     elif cplayer == eplayer:
         val = -inf
         for g in grille.Actions(eplayer):
-            val = max(val, alphabeta(cplayer, -eplayer, g, depth - 1, alpha, beta))
+            val = max(val, alphabeta(cplayer, -eplayer, g, depth - 1, t, alpha, beta))
             if beta <= val : return val
             alpha = max(alpha, val)
         return val
@@ -37,7 +33,7 @@ def alphabeta(cplayer, eplayer, grille, depth, alpha = -inf, beta = inf):
     else:
         val = inf
         for g in grille.Actions(eplayer):
-            val = min(val, alphabeta(cplayer, -eplayer, g, depth - 1, alpha, beta))
+            val = min(val, alphabeta(cplayer, -eplayer, g, depth - 1, t, alpha, beta))
             if alpha >= val : return val
             beta = min(beta, val)
         return val
@@ -90,7 +86,6 @@ class Grille:
         val += sum(sum(convolve(player * self.pos,diag(3,True))))
         val += sum(sum(convolve(player * self.pos,line(3))))
         val += sum(sum(convolve(player * self.pos,line(3,True))))
-        val += sum(sum(convolve(player * self.pos,b)))
         if self.IsWin(player): val += 1000 + depth
         elif self.IsWin(-player): val += -1000 - depth
         return val
@@ -98,8 +93,9 @@ class Grille:
     #Fait jouer l'IA en tant que joueur player
     def play(self, player = 1, depth = 5, alpha = -inf, beta = inf):
         v,g = -inf,None
+        t = time.time()
         for a in self.Actions(player):
-            e = alphabeta(player, -player, a, depth, alpha, beta)
+            e = alphabeta(player, -player, a, depth, t, alpha, beta)
             if e > v: v,g = e,a
         return g.a
 
@@ -132,23 +128,40 @@ if __name__ == '__main__':
     ia2 = True
 
     cont = True
+
+    n = 0
+
     while cont:
         cont = not (m.IsWin(-1) or m.IsTerminal())
         if cont :
             if ia1:
-                m.apply(m.play(player = 1, depth = 4), 1)
+                start = time.time()
+                jeu = m.play(player = 1, depth = 4)
+                m.apply(jeu, 1)
+                print("Colonne",jeu)
+                end = time.time()
+                print(end - start, "Sec")
             else:
                 m.apply(int(input("A vous de jouer")), 1)
+            n+=1
+            print("Jeton",n)
             print(m)
 
         cont = not (m.IsWin(1) or m.IsTerminal()) and cont
         if cont :
             if ia2:
-                m.apply(m.play(player = -1, depth = 4), -1)
-                
+                start = time.time()
+                jeu = m.play(player = -1, depth = 4)
+                m.apply(jeu, -1)
+                print("Colonne",jeu)
+                end = time.time()
+                print(end - start, "Sec")
             else:
                 m.apply(int(input("A vous de jouer")), -1)
+            n+=1
+            print("Jeton",n)
             print(m)
+        if(n >= 42): cont = False
 
     print("Fin de partie")
     print("-----------------------")
